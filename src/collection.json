@@ -1,0 +1,9 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "scss-migrate": {
+      "description": "A blank schematic.",
+      "factory": "./scss-migrate/index#scssMigrate"
+    }
+  }
+}
