@@ -3,7 +3,8 @@
   "schematics": {
     "scss-migrate": {
       "description": "A blank schematic.",
-      "factory": "./scss-migrate/index#scssMigrate"
+      "factory": "./scss-migrate/index#scssMigrate",
+      "schema": "./scss-migrate/schema.json"
     }
   }
 }

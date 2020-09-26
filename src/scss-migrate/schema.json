@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "ScssMIgrate",
+  "title": "SCSS Migrate options",
+  "description": "Options to pass to the schematic",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The name of the service.",
+      "type": "string",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Who to greet?"
+    }
+  },
+  "required": ["name"]
+}
