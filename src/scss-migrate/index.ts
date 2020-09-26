@@ -1,5 +1,6 @@
 import { Rule, SchematicContext, Tree, url, apply, template, mergeWith } from '@angular-devkit/schematics';
 import { Schema } from './schema';
+
 import { strings } from '@angular-devkit/core';
 
 
@@ -7,19 +8,19 @@ import { strings } from '@angular-devkit/core';
 // per file.
 export function scssMigrate(_options: Schema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
-    const { name } = _options;
 
-    const sourceTemplates = url('./');
+    const sourceTemplates = url('./files');
+
 
     const sourceParametrizedTemplate = apply(sourceTemplates, [
       template({
         ..._options,
         ...strings
       })
-    ])
+    ]);
 
-    tree.create('hello.js', `console.log('hello ${name}!')`);
+    // tree.create('hello.js', `console.log('hello ${name}!')`);
 
-    return mergeWith(sourceParametrizedTemplate)(tree, _context);
+    return mergeWith(sourceParametrizedTemplate);
   };
 }
