@@ -8,19 +8,28 @@ import { strings } from '@angular-devkit/core';
 // per file.
 export function scssMigrate(_options: Schema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
-    var glob = require("glob")
+    let glob = require("glob");
+    let filePaths = glob.sync("src/**/*.css");
 
-    let files = glob.sync("src/**/*.css")
+    filePaths.forEach(filePath => {
+      let content: Buffer;
+      let filePathNoExtension: string = filePath.substr(0, filePath.lastIndexOf('.'));
+      let fileName = filePathNoExtension.substr(filePathNoExtension.lastIndexOf('/') + 1, filePathNoExtension.length)
+      let newFilePath = `${filePathNoExtension}.scss`;
 
-    files.forEach(file => {
-      let newFileName = file.substr(0, file.lastIndexOf('.'));
+      tree.rename(filePath, newFilePath);
+      content = tree.read(`${filePathNoExtension}.ts`);
+      const strContent = content.toString();
 
-      tree.rename(file, `${newFileName}.scss`)
+      const finalstr: string = strContent?.replace(`${fileName}.css`, `${fileName}.scss`);
+
+      tree.overwrite(`${filePathNoExtension}.ts`, finalstr);
+
     });
 
 
 
-    // const sourceTemplates = url('./files');
+    // const sourceTemplates = url('');
 
 
     // const sourceParametrizedTemplate = apply(sourceTemplates, [
