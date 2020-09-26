@@ -8,19 +8,32 @@ import { strings } from '@angular-devkit/core';
 // per file.
 export function scssMigrate(_options: Schema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
+    var glob = require("glob")
 
-    const sourceTemplates = url('./files');
+    let files = glob.sync("src/**/*.css")
+
+    files.forEach(file => {
+      let newFileName = file.substr(0, file.lastIndexOf('.'));
+
+      tree.rename(file, `${newFileName}.scss`)
+    });
 
 
-    const sourceParametrizedTemplate = apply(sourceTemplates, [
-      template({
-        ..._options,
-        ...strings
-      })
-    ]);
+
+    // const sourceTemplates = url('./files');
+
+
+    // const sourceParametrizedTemplate = apply(sourceTemplates, [
+    //   template({
+    //     ..._options,
+    //     ...strings
+    //   })
+    // ]);
 
     // tree.create('hello.js', `console.log('hello ${name}!')`);
 
-    return mergeWith(sourceParametrizedTemplate);
+    // return mergeWith(sourceParametrizedTemplate);
+
+    return tree;
   };
 }
