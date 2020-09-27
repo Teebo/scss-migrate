@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "ScssMIgrate",
+  "title": "SCSS Migrate options",
+  "description": "Options to pass to the schematic",
+  "type": "object",
+  "properties": {
+    "from": {
+      "description": "Current stylesheet format",
+      "type": "string",
+      "default": "css",
+      "enum": ["css", "scss"],
+      "x-prompt": "Which stylesheet format are you migrating from?"
+    },
+    "to": {
+      "description": "Stylesheet format desired",
+      "type": "string",
+      "default": "scss",
+      "enum": ["scss", "css"],
+      "x-prompt": "Which stylesheet format are you migrating to?"
+    },
+    "project": {
+      "type": "string",
+      "description": "Generate in project"
+    }
+  }
+}

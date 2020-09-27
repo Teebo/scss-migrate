@@ -1,25 +1,44 @@
 {
-  "name": "scss-migrate",
-  "version": "0.0.0",
-  "description": "A blank schematics",
+  "name": "schematics-scss-migrate",
+  "version": "1.0.0",
+  "description": "A schematic to migrate from CSS to SCSS stylesheet format for an Angular CLI project",
   "scripts": {
+    "build-dev": "tsc -p tsconfig.json --watch",
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && jasmine src/**/*_spec.js"
   },
   "keywords": [
-    "schematics"
+    "schematics",
+    "angular-cli",
+    "scss",
+    "css",
+    "styles",
+    "stylesheet"
   ],
-  "author": "",
+  "author": "Thabo Ambrose <ngubanethabo.ambrose@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Teebo/scss-migrate.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Teebo/scss-migrate/issues"
+  },
+  "homepage": "https://github.com/Teebo/scss-migrate#readme",
   "schematics": "./src/collection.json",
   "dependencies": {
     "@angular-devkit/core": "^10.1.0",
     "@angular-devkit/schematics": "^10.1.0",
+    "@schematics/angular": "^9.1.0",
+    "glob": "^7.1.6",
     "typescript": "~4.0.2"
   },
   "devDependencies": {
-    "@types/node": "^12.11.1",
     "@types/jasmine": "~3.5.0",
+    "@types/node": "^12.11.1",
     "jasmine": "^3.5.0"
   }
 }
