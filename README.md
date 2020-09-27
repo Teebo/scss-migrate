@@ -2,27 +2,16 @@
 
 A schematic to migrate from CSS to SCSS stylesheet format for an Angular CLI project
 
+### Installation
+
+`npm i --save-dev schematics-scss-migrate`
+
+### Usage
+
+In your Angular CLI project, run `ng g schematics-scss-migrate:scss-migrate`, this will rename all the stylesheets in the
+`src` folder recursively and also alter the `styleUrls` value to point to the new file names for the stylesheet.
+It also updates the component styles schematics value in the `angular.json` file or creates one if the schematic does not exist.
+
 ### Notes
 
-To test locally, install `@angular-devkit/schematics-cli` globally and use the `schematics` command line tool. That tool acts the same as the `generate` command of the Angular CLI, but also has a debug mode.
-
-Check the documentation with
-
-```bash
-schematics --help
-```
-
-### Unit Testing
-
-`npm run test` will run the unit tests, using Jasmine as a runner and test framework.
-
-### Publishing
-
-To publish, simply do:
-
-```bash
-npm run build
-npm publish
-```
-
-That's it!
+Try first with the `dry-run=true` flag
