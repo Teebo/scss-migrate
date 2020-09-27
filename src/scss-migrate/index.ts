@@ -1,4 +1,6 @@
-import { Rule, SchematicContext, Tree, url, apply, template, mergeWith } from '@angular-devkit/schematics';
+import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, SchematicsException } from '@angular-devkit/schematics';
+import { buildDefaultPath } from '@schematics/angular/utility/project'
+import { parseName } from '@schematics/angular/utility/parse-name'
 import { Schema } from './schema';
 
 import { strings } from '@angular-devkit/core';
@@ -9,7 +11,34 @@ import { strings } from '@angular-devkit/core';
 export function scssMigrate(_options: Schema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     let glob = require("glob");
-    let filePaths = glob.sync("src/**/*.css");
+
+
+    const workspaceConfigBuffer = tree.read("/angular.json");
+
+    if (!workspaceConfigBuffer) {
+      throw new SchematicsException('Not an Angular CLI project')
+    }
+
+
+
+    const workspaceConfig = JSON.parse(workspaceConfigBuffer.toString());
+    console.log(workspaceConfig);
+    const projectName = workspaceConfig.defaultProject;
+
+    console.log(projectName);
+    const project = workspaceConfig.projects[projectName];
+    console.log(project);
+    const defaultProjectPath = buildDefaultPath(project);
+
+    const parsedPath = parseName(defaultProjectPath, _options.name);
+
+    const { name, path } = parsedPath;
+
+    console.log(name, path);
+
+    console.log('filhes', _options.project);
+    let filePaths = glob.sync(`${path}/**/*.css`);
+
 
     filePaths.forEach(filePath => {
       let content: Buffer;
@@ -26,8 +55,6 @@ export function scssMigrate(_options: Schema): Rule {
       tree.overwrite(`${filePathNoExtension}.ts`, finalstr);
 
     });
-
-
 
     // const sourceTemplates = url('');
 

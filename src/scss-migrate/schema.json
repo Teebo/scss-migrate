@@ -13,6 +13,10 @@
         "index": 0
       },
       "x-prompt": "Who to greet?"
+    },
+    "project": {
+      "type": "string",
+      "description": "Generate in project"
     }
   },
   "required": ["name"]
