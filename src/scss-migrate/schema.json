@@ -19,6 +19,11 @@
       "enum": ["scss", "css"],
       "x-prompt": "Which stylesheet format are you migrating to?"
     },
+    "cssFilesGlob": {
+      "description": "CSS files glob for tests",
+      "type": "array",
+      "default": "[]"
+    },
     "project": {
       "type": "string",
       "description": "Generate in project"

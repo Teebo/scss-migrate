@@ -47,8 +47,9 @@ function scssMigrate(_options) {
             }
             tree.overwrite('/angular.json', JSON.stringify(workspaceConfig, null, "\t"));
             const defaultProjectPath = project_1.buildDefaultPath(project);
-            const filePaths = glob.sync(`.${defaultProjectPath}/**/*.${_options.from}`);
-            console.log('Filesss to rename\n', filePaths);
+            let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${_options.from}`);
+            filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob : [];
+            console.log('Files to rename\n', filePaths);
             filePaths.forEach((filePath) => {
                 let relativeComponentClassFileContent;
                 let filePathNoExtension = filePath.substr(0, filePath.lastIndexOf('.'));
