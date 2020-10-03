@@ -50,7 +50,10 @@ export function scssMigrate(_options: Schema): Rule {
         };
       }
 
-      tree.overwrite('/angular.json', JSON.stringify(workspaceConfig, null, "\t"));
+      const stringifiedWorkspaceConfig = JSON.stringify(workspaceConfig, null, "\t").replace(/styles.css/g, "styles.scss");
+
+
+      tree.overwrite('/angular.json', stringifiedWorkspaceConfig);
 
       const defaultProjectPath = buildDefaultPath(project);
       let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${_options.from}`);

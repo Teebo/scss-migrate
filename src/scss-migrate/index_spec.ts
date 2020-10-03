@@ -62,7 +62,7 @@ describe('scss-migrate', () => {
   });
 
 
-  it('should update component styles schematics in angular.json file', async () => {
+  it('should update component styles schematics in the angular.json file', async () => {
     const tree = await runner.runSchematicAsync('scss-migrate', { cssFilesGlob: ['/scss-migrate-app/src/app/app.component.css'] }, appTree).toPromise();
 
     const projectWorkSpace = JSON.parse(tree.readContent('/angular.json').toString());
@@ -70,5 +70,15 @@ describe('scss-migrate', () => {
     const schematics = projectWorkSpace.projects['scss-migrate-app'].schematics;
 
     expect(schematics['@schematics/angular:component'].style).toBe('scss');
+  });
+
+
+  it('should rename styles.css references to styles.scss in the angular.json file', async () => {
+    const tree = await runner.runSchematicAsync('scss-migrate', { cssFilesGlob: ['/scss-migrate-app/src/app/app.component.css'] }, appTree).toPromise();
+
+    const projectWorkSpace = tree.readContent('/angular.json').toString();
+
+    expect(projectWorkSpace.includes('styles.css')).toBeFalse();
+    expect(projectWorkSpace.includes('styles.scss')).toBeTruthy();
   });
 });
