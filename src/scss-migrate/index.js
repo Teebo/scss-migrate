@@ -52,7 +52,7 @@ function scssMigrate(_options) {
             const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);
             tree.exists(`${srcRoot}/styles.${_options.from}`) && tree.rename(`${srcRoot}/styles.${_options.from}`, `${srcRoot}/styles.${_options.to}`);
             let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${_options.from}`);
-            filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob : [];
+            filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob || [] : [];
             console.log('Files to rename\n', filePaths);
             filePaths.forEach((filePath) => {
                 let relativeComponentClassFileContent;

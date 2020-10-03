@@ -66,7 +66,7 @@ export function scssMigrate(_options: Schema): Rule {
 
       let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${_options.from}`);
 
-      filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob : [];
+      filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob || [] : [];
 
       console.log('Files to rename\n', filePaths);
 
