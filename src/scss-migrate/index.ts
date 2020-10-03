@@ -56,11 +56,10 @@ export function scssMigrate(_options: Schema): Rule {
       tree.overwrite('/angular.json', stringifiedWorkspaceConfig);
 
       const defaultProjectPath = buildDefaultPath(project);
-      console.log(`.${defaultProjectPath}`);
       const lastPosOfPathDelimiter = defaultProjectPath.lastIndexOf('/');
       const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);
 
-      tree.rename(
+      tree.exists(`${srcRoot}/styles.${_options.from}`) && tree.rename(
         `${srcRoot}/styles.${_options.from}`,
         `${srcRoot}/styles.${_options.to}`
       );
