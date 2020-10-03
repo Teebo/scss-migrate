@@ -81,4 +81,11 @@ describe('scss-migrate', () => {
     expect(projectWorkSpace.includes('styles.css')).toBeFalse();
     expect(projectWorkSpace.includes('styles.scss')).toBeTruthy();
   });
+
+  it('should rename styles.css to styles.scss', async () => {
+    const tree = await runner.runSchematicAsync('scss-migrate', { cssFilesGlob: ['/scss-migrate-app/src/app/app.component.css'] }, appTree).toPromise();
+
+    expect(tree.exists('/scss-migrate-app/src/styles.css')).toBeFalse();
+    expect(tree.exists('/scss-migrate-app/src/styles.scss')).toBeTruthy();
+  });
 });
