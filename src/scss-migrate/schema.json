@@ -22,7 +22,7 @@
     "cssFilesGlob": {
       "description": "CSS files glob for tests",
       "type": "array",
-      "default": "[]"
+      "default": []
     },
     "project": {
       "type": "string",

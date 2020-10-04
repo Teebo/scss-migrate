@@ -51,10 +51,6 @@ export function scssMigrate(_options: Schema): Rule {
       }
 
       const stringifiedWorkspaceConfig = JSON.stringify(workspaceConfig, null, "\t").replace(/styles.css/g, `styles.${_options.to}`);
-
-
-      tree.overwrite('/angular.json', stringifiedWorkspaceConfig);
-
       const defaultProjectPath = buildDefaultPath(project);
       const lastPosOfPathDelimiter = defaultProjectPath.lastIndexOf('/');
       const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);
@@ -66,9 +62,8 @@ export function scssMigrate(_options: Schema): Rule {
 
       let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${_options.from}`);
 
-      filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob || [] : [];
-
-      console.log('Files to rename\n', filePaths);
+      filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob : [];
+      filePaths.length && tree.overwrite('/angular.json', stringifiedWorkspaceConfig);
 
       filePaths.forEach((filePath: string) => {
         let relativeComponentClassFileContent: Buffer;
