@@ -4,7 +4,12 @@
     "scss-migrate": {
       "description": "A schematic to migrate from CSS to SCSS stylesheet format for an Angular CLI project",
       "factory": "./scss-migrate/index#scssMigrate",
-      "schema": "./scss-migrate/schema.json"
+      "schema": "./scss-migrate/schema.json",
+      "aliases": ["to-scss", "scss"]
+    },
+    "ng-add": {
+      "description": "A schematic to migrate from CSS to SCSS stylesheet format for an Angular CLI project",
+      "factory": "./ng-add/index#ngAdd"
     }
   }
 }
