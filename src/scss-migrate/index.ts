@@ -1,6 +1,7 @@
 import { Rule, SchematicContext, Tree, SchematicsException } from '@angular-devkit/schematics';
 import { buildDefaultPath } from '@schematics/angular/utility/project'
 import { Schema } from './schema';
+import { scssToCss } from './utils';
 
 export function scssMigrate(_options: Schema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
@@ -71,7 +72,15 @@ export function scssMigrate(_options: Schema): Rule {
         let fileName: string = filePathNoExtension.substr(filePathNoExtension.lastIndexOf('/') + 1, filePathNoExtension.length)
         let newFilePath: string = `${filePathNoExtension}.${_options.to}`;
 
-        tree.rename(filePath, newFilePath);
+
+        // convert file content
+        if (_options.from === 'scss' && _options.to === 'css') {
+          const contentConvertedToCss = scssToCss(filePath);
+          tree.create(newFilePath, contentConvertedToCss);
+          tree.delete(filePath)
+        } else {
+          tree.rename(filePath, newFilePath);
+        }
 
         const componentClassFileName = `${filePathNoExtension}.ts`;
 

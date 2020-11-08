@@ -34,11 +34,13 @@
     "@angular-devkit/schematics": "^10.1.0",
     "@schematics/angular": "^9.1.0",
     "glob": "^7.1.6",
+    "sass": "^1.29.0",
     "typescript": "~4.0.2"
   },
   "devDependencies": {
     "@types/jasmine": "~3.5.0",
     "@types/node": "^12.11.1",
+    "@types/sass": "^1.16.0",
     "jasmine": "^3.5.0"
   },
   "ng-add": {

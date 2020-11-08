@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.scssMigrate = void 0;
 const schematics_1 = require("@angular-devkit/schematics");
 const project_1 = require("@schematics/angular/utility/project");
+const utils_1 = require("./utils");
 function scssMigrate(_options) {
     return (tree, _context) => {
         const glob = require("glob");
@@ -58,7 +59,15 @@ function scssMigrate(_options) {
                 let filePathNoExtension = filePath.substr(0, filePath.lastIndexOf('.'));
                 let fileName = filePathNoExtension.substr(filePathNoExtension.lastIndexOf('/') + 1, filePathNoExtension.length);
                 let newFilePath = `${filePathNoExtension}.${_options.to}`;
-                tree.rename(filePath, newFilePath);
+                // convert file content
+                if (_options.from === 'scss' && _options.to === 'css') {
+                    const contentConvertedToCss = utils_1.scssToCss(filePath);
+                    tree.create(newFilePath, contentConvertedToCss);
+                    tree.delete(filePath);
+                }
+                else {
+                    tree.rename(filePath, newFilePath);
+                }
                 const componentClassFileName = `${filePathNoExtension}.ts`;
                 relativeComponentClassFileContent = tree.exists(componentClassFileName) ? tree.read(componentClassFileName) : null;
                 if (relativeComponentClassFileContent) {
