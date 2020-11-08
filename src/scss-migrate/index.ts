@@ -15,7 +15,7 @@ export function scssMigrate(_options: Schema): Rule {
       const project = workspaceConfig.projects[projectName];
 
       // Needs improvement, maybe use shelljs.exec('ng config schematics.@schematics/angular:component.style scss')?
-      // Maybe its possible to use RunSchematicTask from '@angular-devkit/schematics/tasks'? To achieve  
+      // Maybe its possible to use RunSchematicTask from '@angular-devkit/schematics/tasks'? To achieve
       // adding the new style schematic?
 
       const workspaceSchematics = project ? project.schematics ? project.schematics : null : undefined;
