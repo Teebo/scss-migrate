@@ -92,7 +92,10 @@ describe('scss-migrate', () => {
   describe('when converting from SCSS to CSS', () => {
     beforeEach(async () => {
       appTree = await setupWorkspace('scss');
-      appTree.overwrite('/scss-migrate-app/src/app/app.component.scss', `$foo: '1px solid black';
+  });
+
+  it('should convert SCSS content into CSS when migrating from SCSS to CSS', async () => {
+    appTree.overwrite('/scss-migrate-app/src/app/app.component.scss', `$foo: '1px solid black';
 .foo {
   border: $foo;
   .bar {
@@ -102,18 +105,40 @@ describe('scss-migrate', () => {
   }
 }
   `);
-  });
+    const tree = await runner.runSchematicAsync('scss-migrate', {
+      cssFilesGlob: ['/scss-migrate-app/src/app/app.component.scss'],
+      from: 'scss',
+      to: 'css'
+    }, appTree).toPromise();
+    expect(tree.exists('/scss-migrate-app/src/app/app.component.css')).toBeTrue();
+    expect(tree.exists('/scss-migrate-app/src/app/app.component.scss')).toBeFalsy();
 
-  it('should convert SCSS content into CSS when migrating from SCSS to CSS', async () => {
+    const fileContent = getFileContent(tree, '/scss-migrate-app/src/app/app.component.css');
+    expect(fileContent).toEqual(`.foo {
+  border: "1px solid black";
+}
+.foo .bar > .baz {
+  color: red;
+}`);
+    });
+
+    it('should convert the root style file from SCSS to CSS', async () => {
+      appTree.overwrite('/scss-migrate-app/src/styles.scss', `$foo: '1px solid black';
+.foo {
+  border: $foo;
+  .bar {
+    > .baz {
+      color: red;
+    }
+  }
+}
+  `);
       const tree = await runner.runSchematicAsync('scss-migrate', {
-        cssFilesGlob: ['/scss-migrate-app/src/app/app.component.scss'],
         from: 'scss',
         to: 'css'
       }, appTree).toPromise();
-      expect(tree.exists('/scss-migrate-app/src/app/app.component.css')).toBeTrue();
-      expect(tree.exists('/scss-migrate-app/src/app/app.component.scss')).toBeFalsy();
 
-      const fileContent = getFileContent(tree, '/scss-migrate-app/src/app/app.component.css');
+      const fileContent = getFileContent(tree, '/scss-migrate-app/src/styles.css');
       expect(fileContent).toEqual(`.foo {
   border: "1px solid black";
 }

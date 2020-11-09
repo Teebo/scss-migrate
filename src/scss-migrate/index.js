@@ -50,7 +50,18 @@ function scssMigrate(options) {
             const defaultProjectPath = project_1.buildDefaultPath(project);
             const lastPosOfPathDelimiter = defaultProjectPath.lastIndexOf('/');
             const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);
-            tree.exists(`${srcRoot}/styles.${options.from}`) && tree.rename(`${srcRoot}/styles.${options.from}`, `${srcRoot}/styles.${options.to}`);
+            // convert root styles.scss file content
+            if (options.from === 'scss' && options.to === 'css') {
+                const target = `${srcRoot}styles.scss`;
+                console.log('DBG', target);
+                const data = tree.read(target).toString();
+                const result = sass_1.renderSync({ data });
+                tree.create(`${srcRoot}styles.css`, result.css.toString());
+                tree.delete(`${srcRoot}styles.scss`);
+            }
+            else {
+                tree.exists(`${srcRoot}/styles.${options.from}`) && tree.rename(`${srcRoot}/styles.${options.from}`, `${srcRoot}/styles.${options.to}`);
+            }
             let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${options.from}`);
             filePaths = filePaths.length ? filePaths : options.cssFilesGlob.length ? options.cssFilesGlob : [];
             filePaths.length && tree.overwrite('/angular.json', stringifiedWorkspaceConfig);
