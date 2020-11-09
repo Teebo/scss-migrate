@@ -1,5 +1,7 @@
 export interface Schema {
-    from?: string;
-    to?: string;
+    from?: StyleExtension;
+    to?: StyleExtension;
     cssFilesGlob?: string[];
 }
+
+export type StyleExtension = 'css' | 'scss';

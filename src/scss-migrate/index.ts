@@ -1,9 +1,9 @@
 import { Rule, SchematicContext, Tree, SchematicsException } from '@angular-devkit/schematics';
-import { buildDefaultPath } from '@schematics/angular/utility/project'
+import { buildDefaultPath } from '@schematics/angular/utility/project';
+import { renderSync } from 'sass';
 import { Schema } from './schema';
-import { scssToCss } from './utils';
 
-export function scssMigrate(_options: Schema): Rule {
+export function scssMigrate(options: Schema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const glob = require("glob");
     const workspaceConfigBuffer = tree.read("/angular.json");
@@ -34,50 +34,51 @@ export function scssMigrate(_options: Schema): Rule {
           componentSchematics.styleExt && delete componentSchematics.styleExt;
 
           if (styleSheetFormat) {
-            styleSheetFormat = styleSheetFormat = _options.to;
+            styleSheetFormat = styleSheetFormat = options.to;
           } else {
-            componentSchematics.style = _options.to;
+            componentSchematics.style = options.to;
           }
         } else {
           workspaceSchematics['@schematics/angular:component'] = {
-            "style": _options.to
+            "style": options.to
           };
         }
       } else {
         project.schematics = { ['@schematics/angular:component']: {} };
 
         project.schematics['@schematics/angular:component'] = {
-          "style": _options.to
+          "style": options.to
         };
       }
 
-      const stringifiedWorkspaceConfig = JSON.stringify(workspaceConfig, null, "\t").replace(/styles.css/g, `styles.${_options.to}`);
+      const stringifiedWorkspaceConfig = JSON.stringify(workspaceConfig, null, "\t").replace(/styles.css/g, `styles.${options.to}`);
       const defaultProjectPath = buildDefaultPath(project);
       const lastPosOfPathDelimiter = defaultProjectPath.lastIndexOf('/');
       const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);
 
-      tree.exists(`${srcRoot}/styles.${_options.from}`) && tree.rename(
-        `${srcRoot}/styles.${_options.from}`,
-        `${srcRoot}/styles.${_options.to}`
+      tree.exists(`${srcRoot}/styles.${options.from}`) && tree.rename(
+        `${srcRoot}/styles.${options.from}`,
+        `${srcRoot}/styles.${options.to}`
       );
 
-      let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${_options.from}`);
+      let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${options.from}`);
 
-      filePaths = filePaths.length ? filePaths : _options.cssFilesGlob.length ? _options.cssFilesGlob : [];
+      filePaths = filePaths.length ? filePaths : options.cssFilesGlob.length ? options.cssFilesGlob : [];
       filePaths.length && tree.overwrite('/angular.json', stringifiedWorkspaceConfig);
 
       filePaths.forEach((filePath: string) => {
         let relativeComponentClassFileContent: Buffer;
         let filePathNoExtension: string = filePath.substr(0, filePath.lastIndexOf('.'));
         let fileName: string = filePathNoExtension.substr(filePathNoExtension.lastIndexOf('/') + 1, filePathNoExtension.length)
-        let newFilePath: string = `${filePathNoExtension}.${_options.to}`;
+        let newFilePath: string = `${filePathNoExtension}.${options.to}`;
 
 
         // convert file content
-        if (_options.from === 'scss' && _options.to === 'css') {
-          const contentConvertedToCss = scssToCss(filePath);
-          tree.create(newFilePath, contentConvertedToCss);
-          tree.delete(filePath)
+        if (options.from === 'scss' && options.to === 'css') {
+          const data = tree.read(filePath).toString();
+          const result = renderSync({ data });
+          tree.create(newFilePath, result.css.toString());
+          tree.delete(filePath);
         } else {
           tree.rename(filePath, newFilePath);
         }
@@ -89,8 +90,8 @@ export function scssMigrate(_options: Schema): Rule {
         if (relativeComponentClassFileContent) {
           const relativeComponentClassFileContentAsString = relativeComponentClassFileContent.toString();
           const finalComponentClassFileContent: string = relativeComponentClassFileContentAsString?.replace(
-            `${fileName}.${_options.from}`,
-            `${fileName}.${_options.to}`
+            `${fileName}.${options.from}`,
+            `${fileName}.${options.to}`
           );
 
           tree.overwrite(componentClassFileName, finalComponentClassFileContent);
