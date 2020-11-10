@@ -53,7 +53,6 @@ function scssMigrate(options) {
             // convert root styles.scss file content
             if (options.from === 'scss' && options.to === 'css') {
                 const target = `${srcRoot}styles.scss`;
-                console.log('DBG', target);
                 const data = tree.read(target).toString();
                 const result = sass_1.renderSync({ data });
                 tree.create(`${srcRoot}styles.css`, result.css.toString());
