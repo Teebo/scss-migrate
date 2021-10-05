@@ -21,7 +21,6 @@ const setupWorkspace = async (style = 'css') => {
     'application',
     {
       name: 'scss-migrate-app',
-      defaultProject: 'scss-migrate-app',
       style
     },
     appTree

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.scssMigrate = void 0;
 const schematics_1 = require("@angular-devkit/schematics");
-const project_1 = require("@schematics/angular/utility/project");
+const workspace_1 = require("@schematics/angular/utility/workspace");
 const sass_1 = require("sass");
 function scssMigrate(options) {
     return (tree, _context) => {
@@ -47,7 +47,8 @@ function scssMigrate(options) {
                 };
             }
             const stringifiedWorkspaceConfig = JSON.stringify(workspaceConfig, null, "\t").replace(/styles.css/g, `styles.${options.to}`);
-            const defaultProjectPath = project_1.buildDefaultPath(project);
+            project.extensions = { projectType: project.projectType };
+            const defaultProjectPath = workspace_1.buildDefaultPath(project);
             const lastPosOfPathDelimiter = defaultProjectPath.lastIndexOf('/');
             const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);
             // convert root styles.scss file content

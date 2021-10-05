@@ -1,5 +1,5 @@
 import { Rule, SchematicContext, Tree, SchematicsException } from '@angular-devkit/schematics';
-import { buildDefaultPath } from '@schematics/angular/utility/project';
+import { buildDefaultPath } from '@schematics/angular/utility/workspace';
 import { renderSync } from 'sass';
 import { Schema } from './schema';
 
@@ -52,6 +52,8 @@ export function scssMigrate(options: Schema): Rule {
       }
 
       const stringifiedWorkspaceConfig = JSON.stringify(workspaceConfig, null, "\t").replace(/styles.css/g, `styles.${options.to}`);
+      project.extensions = { projectType: project.projectType };
+
       const defaultProjectPath = buildDefaultPath(project);
       const lastPosOfPathDelimiter = defaultProjectPath.lastIndexOf('/');
       const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);

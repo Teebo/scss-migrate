@@ -30,12 +30,12 @@
   "homepage": "https://github.com/Teebo/scss-migrate#readme",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^10.1.0",
-    "@angular-devkit/schematics": "^10.1.0",
-    "@schematics/angular": "^9.1.0",
+    "@angular-devkit/core": "^12.0.1",
+    "@angular-devkit/schematics": "^12.2.8",
+    "@schematics/angular": "^12.2.8",
     "glob": "^7.1.6",
     "sass": "^1.29.0",
-    "typescript": "~4.0.2"
+    "typescript": "^4.3.2"
   },
   "devDependencies": {
     "@types/jasmine": "~3.5.0",
