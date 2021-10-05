@@ -1,23 +1,32 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "ScssMIgrate",
+  "$id": "ScssMIgrate",
   "title": "SCSS Migrate options",
   "description": "Options to pass to the schematic",
   "type": "object",
   "properties": {
-    "name": {
-      "description": "The name of the service.",
+    "from": {
+      "description": "Current stylesheet format",
       "type": "string",
-      "$default": {
-        "$source": "argv",
-        "index": 0
-      },
-      "x-prompt": "Who to greet?"
+      "default": "css",
+      "enum": ["css", "scss"],
+      "x-prompt": "Which stylesheet format are you migrating from?"
+    },
+    "to": {
+      "description": "Stylesheet format desired",
+      "type": "string",
+      "default": "scss",
+      "enum": ["scss", "css"],
+      "x-prompt": "Which stylesheet format are you migrating to?"
+    },
+    "cssFilesGlob": {
+      "description": "CSS files glob for tests",
+      "type": "array",
+      "default": []
     },
     "project": {
       "type": "string",
       "description": "Generate in project"
     }
-  },
-  "required": ["name"]
+  }
 }

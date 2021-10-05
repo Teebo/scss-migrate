@@ -1,74 +1,114 @@
-import { Rule, SchematicContext, Tree, url, apply, template, mergeWith, SchematicsException } from '@angular-devkit/schematics';
-import { buildDefaultPath } from '@schematics/angular/utility/project'
-import { parseName } from '@schematics/angular/utility/parse-name'
+import { Rule, SchematicContext, Tree, SchematicsException } from '@angular-devkit/schematics';
+import { buildDefaultPath } from '@schematics/angular/utility/workspace';
+import { renderSync } from 'sass';
 import { Schema } from './schema';
 
-import { strings } from '@angular-devkit/core';
-
-
-// You don't have to export the function as default. You can also have more than one rule factory
-// per file.
-export function scssMigrate(_options: Schema): Rule {
+export function scssMigrate(options: Schema): Rule {
   return (tree: Tree, _context: SchematicContext) => {
-    let glob = require("glob");
-
-
+    const glob = require("glob");
     const workspaceConfigBuffer = tree.read("/angular.json");
 
     if (!workspaceConfigBuffer) {
       throw new SchematicsException('Not an Angular CLI project')
+    } else {
+      const workspaceConfig = JSON.parse(workspaceConfigBuffer.toString());
+      const projectName = workspaceConfig.defaultProject;
+      const project = workspaceConfig.projects[projectName];
+
+      // Needs improvement, maybe use shelljs.exec('ng config schematics.@schematics/angular:component.style scss')?
+      // Maybe its possible to use RunSchematicTask from '@angular-devkit/schematics/tasks'? To achieve
+      // adding the new style schematic?
+
+      const workspaceSchematics = project ? project.schematics ? project.schematics : null : undefined;
+
+      if (workspaceSchematics === undefined) {
+        throw new SchematicsException('Not a valid Angular CLI project')
+      }
+
+      if (workspaceSchematics) {
+        let componentSchematics = workspaceSchematics['@schematics/angular:component'];
+
+        if (componentSchematics) {
+          let styleSheetFormat = componentSchematics.style;
+
+          componentSchematics.styleExt && delete componentSchematics.styleExt;
+
+          if (styleSheetFormat) {
+            styleSheetFormat = styleSheetFormat = options.to;
+          } else {
+            componentSchematics.style = options.to;
+          }
+        } else {
+          workspaceSchematics['@schematics/angular:component'] = {
+            "style": options.to
+          };
+        }
+      } else {
+        project.schematics = { ['@schematics/angular:component']: {} };
+
+        project.schematics['@schematics/angular:component'] = {
+          "style": options.to
+        };
+      }
+
+      const stringifiedWorkspaceConfig = JSON.stringify(workspaceConfig, null, "\t").replace(/styles.css/g, `styles.${options.to}`);
+      project.extensions = { projectType: project.projectType };
+
+      const defaultProjectPath = buildDefaultPath(project);
+      const lastPosOfPathDelimiter = defaultProjectPath.lastIndexOf('/');
+      const srcRoot = defaultProjectPath.substr(0, lastPosOfPathDelimiter + 1);
+
+      // convert root styles.scss file content
+      if (options.from === 'scss' && options.to === 'css') {
+        const target = `${srcRoot}styles.scss`;
+        const data = tree.read(target).toString();
+        const result = renderSync({ data });
+        tree.create(`${srcRoot}styles.css`, result.css.toString());
+        tree.delete(`${srcRoot}styles.scss`);
+      } else {
+        tree.exists(`${srcRoot}/styles.${options.from}`) && tree.rename(
+          `${srcRoot}/styles.${options.from}`,
+          `${srcRoot}/styles.${options.to}`
+        );
+      }
+
+      let filePaths = glob.sync(`.${defaultProjectPath}/**/*.${options.from}`);
+
+      filePaths = filePaths.length ? filePaths : options.cssFilesGlob.length ? options.cssFilesGlob : [];
+      filePaths.length && tree.overwrite('/angular.json', stringifiedWorkspaceConfig);
+
+      filePaths.forEach((filePath: string) => {
+        let relativeComponentClassFileContent: Buffer;
+        let filePathNoExtension: string = filePath.substr(0, filePath.lastIndexOf('.'));
+        let fileName: string = filePathNoExtension.substr(filePathNoExtension.lastIndexOf('/') + 1, filePathNoExtension.length)
+        let newFilePath: string = `${filePathNoExtension}.${options.to}`;
+
+
+        // convert file content
+        if (options.from === 'scss' && options.to === 'css') {
+          const data = tree.read(filePath).toString();
+          const result = renderSync({ data });
+          tree.create(newFilePath, result.css.toString());
+          tree.delete(filePath);
+        } else {
+          tree.rename(filePath, newFilePath);
+        }
+
+        const componentClassFileName = `${filePathNoExtension}.ts`;
+
+        relativeComponentClassFileContent = tree.exists(componentClassFileName) ? tree.read(componentClassFileName) : null;
+
+        if (relativeComponentClassFileContent) {
+          const relativeComponentClassFileContentAsString = relativeComponentClassFileContent.toString();
+          const finalComponentClassFileContent: string = relativeComponentClassFileContentAsString?.replace(
+            `${fileName}.${options.from}`,
+            `${fileName}.${options.to}`
+          );
+
+          tree.overwrite(componentClassFileName, finalComponentClassFileContent);
+        }
+      });
     }
-
-
-
-    const workspaceConfig = JSON.parse(workspaceConfigBuffer.toString());
-    console.log(workspaceConfig);
-    const projectName = workspaceConfig.defaultProject;
-
-    console.log(projectName);
-    const project = workspaceConfig.projects[projectName];
-    console.log(project);
-    const defaultProjectPath = buildDefaultPath(project);
-
-    const parsedPath = parseName(defaultProjectPath, _options.name);
-
-    const { name, path } = parsedPath;
-
-    console.log(name, path);
-
-    console.log('filhes', _options.project);
-    let filePaths = glob.sync(`${path}/**/*.css`);
-
-
-    filePaths.forEach(filePath => {
-      let content: Buffer;
-      let filePathNoExtension: string = filePath.substr(0, filePath.lastIndexOf('.'));
-      let fileName = filePathNoExtension.substr(filePathNoExtension.lastIndexOf('/') + 1, filePathNoExtension.length)
-      let newFilePath = `${filePathNoExtension}.scss`;
-
-      tree.rename(filePath, newFilePath);
-      content = tree.read(`${filePathNoExtension}.ts`);
-      const strContent = content.toString();
-
-      const finalstr: string = strContent?.replace(`${fileName}.css`, `${fileName}.scss`);
-
-      tree.overwrite(`${filePathNoExtension}.ts`, finalstr);
-
-    });
-
-    // const sourceTemplates = url('');
-
-
-    // const sourceParametrizedTemplate = apply(sourceTemplates, [
-    //   template({
-    //     ..._options,
-    //     ...strings
-    //   })
-    // ]);
-
-    // tree.create('hello.js', `console.log('hello ${name}!')`);
-
-    // return mergeWith(sourceParametrizedTemplate);
 
     return tree;
   };
