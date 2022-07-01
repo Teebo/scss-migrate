@@ -2,6 +2,7 @@
 
 A schematic to migrate from CSS to SCSS (or vice versa) stylesheet format for an Angular CLI project
 
+![alt text](https://miro.medium.com/max/890/1*ic7BnzH8YRYC6FDLQ8jetg.png)
 ### Installation
 
 `npm i --save-dev schematics-scss-migrate`
