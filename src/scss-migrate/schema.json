@@ -26,7 +26,8 @@
     },
     "project": {
       "type": "string",
-      "description": "Generate in project"
+      "description": "A project name that exists in the angular.json file",
+      "x-prompt": "Which project do you want to migrate?"
     }
   }
 }

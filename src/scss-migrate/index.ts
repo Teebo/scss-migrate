@@ -9,22 +9,27 @@ export function scssMigrate(options: Schema): Rule {
     const workspaceConfigBuffer = tree.read("/angular.json");
 
     if (!workspaceConfigBuffer) {
-      throw new SchematicsException('Not an Angular CLI project')
+      throw new SchematicsException('Not an Angular CLI workspace')
     } else {
       const workspaceConfig = JSON.parse(workspaceConfigBuffer.toString());
-      const projectName = workspaceConfig.defaultProject;
+
+      const projectName = options.project ? options.project : workspaceConfig.defaultProject;
+
+      if (!projectName) {
+        throw new SchematicsException('Could not find a project to migrate, make sure you have provided a project name and that it is correct.');
+      }
+
       const project = workspaceConfig.projects[projectName];
+
+      if (!project) {
+        throw new SchematicsException('Could not find a project to migrate, make sure you have provided a project name and that it is correct.');
+      }
+
+      const workspaceSchematics = project ? project.schematics : undefined;
 
       // Needs improvement, maybe use shelljs.exec('ng config schematics.@schematics/angular:component.style scss')?
       // Maybe its possible to use RunSchematicTask from '@angular-devkit/schematics/tasks'? To achieve
       // adding the new style schematic?
-
-      const workspaceSchematics = project ? project.schematics ? project.schematics : null : undefined;
-
-      if (workspaceSchematics === undefined) {
-        throw new SchematicsException('Not a valid Angular CLI project')
-      }
-
       if (workspaceSchematics) {
         let componentSchematics = workspaceSchematics['@schematics/angular:component'];
 
@@ -82,7 +87,6 @@ export function scssMigrate(options: Schema): Rule {
         let filePathNoExtension: string = filePath.substr(0, filePath.lastIndexOf('.'));
         let fileName: string = filePathNoExtension.substr(filePathNoExtension.lastIndexOf('/') + 1, filePathNoExtension.length)
         let newFilePath: string = `${filePathNoExtension}.${options.to}`;
-
 
         // convert file content
         if (options.from === 'scss' && options.to === 'css') {

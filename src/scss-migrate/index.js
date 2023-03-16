@@ -9,19 +9,22 @@ function scssMigrate(options) {
         const glob = require("glob");
         const workspaceConfigBuffer = tree.read("/angular.json");
         if (!workspaceConfigBuffer) {
-            throw new schematics_1.SchematicsException('Not an Angular CLI project');
+            throw new schematics_1.SchematicsException('Not an Angular CLI workspace');
         }
         else {
             const workspaceConfig = JSON.parse(workspaceConfigBuffer.toString());
-            const projectName = workspaceConfig.defaultProject;
+            const projectName = options.project ? options.project : workspaceConfig.defaultProject;
+            if (!projectName) {
+                throw new schematics_1.SchematicsException('Could not find a project to migrate, make sure you have provided a project name and that it is correct.');
+            }
             const project = workspaceConfig.projects[projectName];
+            if (!project) {
+                throw new schematics_1.SchematicsException('Could not find a project to migrate, make sure you have provided a project name and that it is correct.');
+            }
+            const workspaceSchematics = project ? project.schematics : undefined;
             // Needs improvement, maybe use shelljs.exec('ng config schematics.@schematics/angular:component.style scss')?
             // Maybe its possible to use RunSchematicTask from '@angular-devkit/schematics/tasks'? To achieve
             // adding the new style schematic?
-            const workspaceSchematics = project ? project.schematics ? project.schematics : null : undefined;
-            if (workspaceSchematics === undefined) {
-                throw new schematics_1.SchematicsException('Not a valid Angular CLI project');
-            }
             if (workspaceSchematics) {
                 let componentSchematics = workspaceSchematics['@schematics/angular:component'];
                 if (componentSchematics) {
