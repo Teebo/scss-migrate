@@ -1,6 +1,6 @@
 {
   "name": "schematics-scss-migrate",
-  "version": "2.3.15",
+  "version": "2.3.16",
   "description": "A schematic to migrate from CSS to SCSS stylesheet format for an Angular CLI project",
   "scripts": {
     "build-dev": "tsc -p tsconfig.json --watch",
