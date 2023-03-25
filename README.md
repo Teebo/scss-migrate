@@ -26,4 +26,5 @@ This will do the following in the consuming project:
 
 ### Notes
 
-Try first with the `dry-run=true` flag
+Try first with the `--dry-run=true` flag
+When asked which project to migrate, use the project name from the `angular.json` file. It is case sensitive.
